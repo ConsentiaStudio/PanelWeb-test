@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="consentia-pagina" content="panel">
+<meta name="consentia-agenda-version" content="4.0.0">
+<meta name="consentia-agenda-firma" content="hp9zrEb0rxdgLdYApdgqd4P2GJy4Nm27i/bjdeO5sShmWYz86Nx52i/Vj064Zh7t7bY/DStVc/syoiUVv5YsDw==">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'sha256-lL01xsK7igrZpFRgkveGweEBSlmtilsGE4KnQtN4eKE='; connect-src https://api.github.com; img-src data:; base-uri 'none'; form-action 'none'">
+<meta name="theme-color" content="#111113">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Panel">
+<title>Panel · Consentia Studio</title>
+<style>
+:root{--pink:#ff2b91;--pinkD:#c2006b;--pinkS:#ffe3f0;--ink:#111113;--paper:#f5f3ee;--line:#d9d5ce;--muted:#6b6862;--good:#216c3b;--bad:#a20f3b;--warn:#8a5a00;--card:#fff}
+*{box-sizing:border-box}html,body{margin:0;background:var(--paper);color:var(--ink);font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:15px;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+.top{position:sticky;top:0;z-index:5;background:var(--ink);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;display:flex;align-items:center;gap:10px}
+.top b{font-size:16px;letter-spacing:.02em}.top .sp{flex:1}.top button{background:transparent;border:1px solid #444;color:#fff;border-radius:6px;padding:6px 10px;font-size:13px}
+.wrap{max-width:860px;margin:0 auto;padding:14px 14px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin:0 0 12px}
+h1{font-size:20px;margin:0 0 8px}h2{font-size:15px;margin:0 0 10px;text-transform:none}h3{font-size:13px;margin:12px 0 6px;color:var(--muted)}
+.field{display:grid;gap:5px;margin:0 0 10px}.field label{font-size:13px;font-weight:600}
+.input{width:100%;border:1px solid var(--line);border-radius:8px;padding:11px 12px;background:#fff;font-size:16px}
+.btn{border:0;border-radius:8px;padding:11px 16px;font-weight:700;background:var(--pink);color:#fff;font-size:15px}.btn.light{background:#ece9e3;color:var(--ink)}.btn.ghost{background:transparent;color:var(--pinkD);padding:8px 4px}
+.btn:disabled{opacity:.5}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.msg{padding:10px 12px;border-radius:8px;margin:0 0 10px;font-size:14px}.msg.bad{background:#fbe3ea;color:var(--bad)}.msg.ok{background:#e4f3e8;color:var(--good)}.msg.warn{background:#fdeecb;color:var(--warn)}
+.hint{font-size:13px;color:var(--muted);line-height:1.4}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}@media(min-width:600px){.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.kpi{background:var(--paper);border-radius:8px;padding:10px}.kpi span{display:block;font-size:12px;color:var(--muted)}.kpi strong{font-size:19px}.kpi small{display:block;font-size:12px;color:var(--muted)}
+.tabs{display:flex;gap:4px;overflow-x:auto;margin:0 0 12px}.tabs button{border:0;background:#ece9e3;border-radius:999px;padding:8px 14px;font-weight:600;white-space:nowrap}.tabs button.on{background:var(--ink);color:#fff}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:7px 6px;border-bottom:1px solid #eee;text-align:left}th{font-size:12px;color:var(--muted);font-weight:600}td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.tag{display:inline-block;font-size:11px;border-radius:999px;padding:2px 8px;background:#ece9e3}.tag.warn{background:#fdeecb;color:var(--warn)}.tag.bad{background:#fbe3ea;color:var(--bad)}.tag.ok{background:#e4f3e8;color:var(--good)}
+.day{display:flex;align-items:center;gap:8px;justify-content:center;margin:0 0 12px}.day button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 12px}.day b{min-width:150px;text-align:center}
+.pos{color:var(--good)}.neg{color:var(--bad)}.logo{width:28px;height:28px;border-radius:50%;background:var(--pink);display:inline-flex;align-items:center;justify-content:center;font-weight:900}
+</style>
+</head>
+<body>
+<div class="top"><span class="logo">C</span><b>Panel de empresa</b><span class="sp"></span><span id="topBtns"></span></div>
+<div class="wrap" id="app"></div>
+<script>
+(function () {
+  'use strict';
+  var FORMAT = 'consentia-panel-1', LS = 'consentia-panel-v1', MIN_ITER = 100000, DEV_ITER = 600000;
+  var app = document.getElementById('app'), topBtns = document.getElementById('topBtns');
+  // Dónde están los resúmenes: https://USUARIO.github.io/PanelWeb(-test)/ → USUARIO/Panel(-test). (En este ordenador,
+  // solo para pruebas: ?repo=…&api=….)
+  var cfg = (function () {
+    var q = new URLSearchParams(location.search), h = location.hostname, seg = location.pathname.split('/').filter(Boolean);
+    if (/\.github\.io$/i.test(h) && seg.length) return { repo: h.split('.')[0] + '/' + seg[0].replace(/^PanelWeb/i, 'Panel'), api: 'https://api.github.com', local: false };
+    if (h !== 'localhost' && h !== '127.0.0.1') return { repo: '', api: '', local: false };
+    return { repo: q.get('repo') || '', api: q.get('api') || 'https://api.github.com', local: true };
+  })();
+  // Esta página no usa «service workers»: si alguien hubiera instalado uno, se quita.
+  try { if (navigator.serviceWorker) navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); }).catch(function () {}); } catch (e) { }
+  var st = { me: null, data: null, day: today(), tab: 'resumen', msg: '', loading: false, files: {} };
+
+  /* ---------------- utilidades ---------------- */
+  function today() { var d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function addDays(k, n) { var d = new Date(k + 'T12:00:00'); d.setDate(d.getDate() + n); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function money(v) { return (Number(v) || 0).toLocaleString('es-ES', { style: 'currency', currency: 'EUR' }); }
+  function fdate(k) { var d = new Date(k + 'T12:00:00'); return d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }); }
+  function fmonth(ym) { var d = new Date(ym + '-15T12:00:00'); return d.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }); }
+  function rel(iso) { var m = Math.round((Date.now() - Date.parse(iso)) / 60000); if (!(m >= 0)) return ''; if (m < 2) return 'ahora mismo'; if (m < 60) return 'hace ' + m + ' min'; var h = Math.round(m / 60); if (h < 48) return 'hace ' + h + ' h'; return 'hace ' + Math.round(h / 24) + ' días'; }
+  var enc = new TextEncoder(), dec = new TextDecoder();
+  function b64u(buf) { var s = '', b = new Uint8Array(buf); for (var i = 0; i < b.length; i++) s += String.fromCharCode(b[i]); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+  function unb64u(s) { s = String(s || '').replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; var bin = atob(s), out = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i); return out; }
+  function unb64(s) { var bin = atob(String(s || '').replace(/\s/g, '')), out = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i); return out; }
+  var C = window.crypto && window.crypto.subtle;
+
+  /* ---------------- claves ---------------- */
+  function pwKey(password, salt, iter) {
+    return C.importKey('raw', enc.encode(String(password).normalize('NFC')), 'PBKDF2', false, ['deriveKey']).then(function (k) {
+      return C.deriveKey({ name: 'PBKDF2', hash: 'SHA-256', salt: salt, iterations: iter }, k, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']); });
+  }
+  // Alta: #a=[vueltas 4][sal 16][iv 12][cifrado] → { d, x, y, id, token }
+  async function openAlta(code, password) {
+    var b = unb64u(code); var iter = new DataView(b.buffer).getUint32(0); if (iter < MIN_ITER && !cfg.local) throw new Error('Enlace de alta no válido.');
+    var key = await pwKey(password, b.slice(4, 20), iter); var p;
+    try { p = new Uint8Array(await C.decrypt({ name: 'AES-GCM', iv: b.slice(20, 32), additionalData: enc.encode('consentia-panel-alta-1') }, key, b.slice(32))); }
+    catch (e) { throw new Error('La contraseña de alta no es esa (o el enlace está incompleto).'); }
+    if (p[0] !== 1) throw new Error('Este enlace es de otra versión del programa.');
+    var n = p[97];
+    return { d: b64u(p.slice(1, 33)), x: b64u(p.slice(33, 65)), y: b64u(p.slice(65, 97)), id: dec.decode(p.slice(98, 98 + n)), token: dec.decode(p.slice(98 + n)) };
+  }
+  // Lo de este dispositivo se guarda aquí cifrado con SU contraseña (la clave privada y el permiso de lectura).
+  async function save(me, password) {
+    var salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12)), iter = cfg.local ? 1000 : DEV_ITER;
+    var key = await pwKey(password, salt, iter);
+    var ct = await C.encrypt({ name: 'AES-GCM', iv: iv, additionalData: enc.encode(LS) }, key, enc.encode(JSON.stringify(me)));
+    localStorage.setItem(LS, JSON.stringify({ v: 1, iter: iter, salt: b64u(salt), iv: b64u(iv), ct: b64u(ct), name: me.name || '' }));
+  }
+  function stored() { try { var j = JSON.parse(localStorage.getItem(LS) || 'null'); return j && j.v === 1 ? j : null; } catch (e) { return null; } }
+  async function unlock(password) {
+    var j = stored(); if (!j) throw new Error('Este dispositivo no está dado de alta.');
+    var key = await pwKey(password, unb64u(j.salt), Number(j.iter) || DEV_ITER);
+    try { return JSON.parse(dec.decode(await C.decrypt({ name: 'AES-GCM', iv: unb64u(j.iv), additionalData: enc.encode(LS) }, key, unb64u(j.ct)))); }
+    catch (e) { throw new Error('La contraseña no es esa.'); }
+  }
+  // Clave de recuperación: CSREC1.[d 32][x 32][y 32]
+  function readRecovery(text) {
+    var m = /^CSREC1\.([A-Za-z0-9_-]{120,140})$/.exec(String(text || '').replace(/\s+/g, '')); if (!m) throw new Error('Esa no es una clave de recuperación del panel (empieza por CSREC1.).');
+    var b = unb64u(m[1]); if (b.length !== 96) throw new Error('La clave de recuperación está incompleta.');
+    return { kid: 'recuperacion', id: 'recuperacion', d: b64u(b.slice(0, 32)), x: b64u(b.slice(32, 64)), y: b64u(b.slice(64, 96)) };
+  }
+  // Abrir un resumen: ECDH(mi clave, efímera) → HKDF → abre la clave del resumen → abre el resumen.
+  async function openEnvelope(text, me) {
+    var e = JSON.parse(text); if (e.f !== FORMAT) throw new Error('No es un resumen del panel.');
+    var kid = me.kid || me.id; var mine = (e.r || []).filter(function (r) { return r.k === kid; })[0]; if (!mine) { var err = new Error('sin-mi'); err.notMine = true; throw err; }
+    var priv = await C.importKey('jwk', { kty: 'EC', crv: 'P-256', x: me.x, y: me.y, d: me.d, ext: true }, { name: 'ECDH', namedCurve: 'P-256' }, false, ['deriveBits']);
+    var pub = await C.importKey('jwk', { kty: 'EC', crv: 'P-256', x: e.epk.x, y: e.epk.y, ext: true }, { name: 'ECDH', namedCurve: 'P-256' }, false, []);
+    var shared = await C.deriveBits({ name: 'ECDH', public: pub }, priv, 256);
+    var hk = await C.importKey('raw', shared, 'HKDF', false, ['deriveKey']);
+    var kek = await C.deriveKey({ name: 'HKDF', hash: 'SHA-256', salt: unb64u(e.epk.x), info: enc.encode(FORMAT + '|' + kid) }, hk, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+    var w = unb64u(mine.w);
+    var cek = await C.decrypt({ name: 'AES-GCM', iv: w.slice(0, 12), additionalData: enc.encode(kid) }, kek, w.slice(12));
+    var ck = await C.importKey('raw', cek, 'AES-GCM', false, ['decrypt']);
+    var plain = await C.decrypt({ name: 'AES-GCM', iv: unb64u(e.iv), additionalData: enc.encode(FORMAT + ':' + e.z + '/' + e.n) }, ck, unb64u(e.c));
+    return JSON.parse(dec.decode(plain));
+  }
+
+  /* ---------------- GitHub (solo lectura) ---------------- */
+  async function gh(path) {
+    var r; try { r = await fetch(cfg.api + path, { headers: { Authorization: 'Bearer ' + st.me.token, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' }, cache: 'no-store' }); }
+    catch (e) { throw new Error('Sin conexión con GitHub (¿hay Internet?).'); }
+    if (r.status === 401) throw new Error('El permiso de GitHub de este dispositivo no vale o ha caducado. Pide en un local que lo den de alta otra vez.');
+    if (r.status === 403 || r.status === 404) throw new Error('El permiso de GitHub de este dispositivo no da acceso a ' + cfg.repo + '.');
+    if (!r.ok) throw new Error('GitHub respondió ' + r.status + '.');
+    return r.json();
+  }
+  async function blob(sha) { if (st.files[sha]) return st.files[sha]; var b = await gh('/repos/' + cfg.repo + '/git/blobs/' + sha); var t = dec.decode(unb64(b.content)); st.files[sha] = t; return t; }
+  async function load() {
+    st.loading = true; st.msg = ''; draw();
+    try {
+      var br = await gh('/repos/' + cfg.repo + '/branches?per_page=100');
+      var locals = (br || []).filter(function (b) { return /^local-[a-z0-9][a-z0-9-]{0,59}$/.test(b.name); });
+      var out = []; var day = st.day, ym = day.slice(0, 7), notMine = 0;
+      for (var i = 0; i < locals.length; i++) {
+        var b = locals[i]; var t = await gh('/repos/' + cfg.repo + '/git/trees/' + b.commit.sha);
+        var files = (t.tree || []).filter(function (f) { return f.type === 'blob'; });
+        var days = files.filter(function (f) { return /^dia-\d{4}-\d{2}-\d{2}\.json$/.test(f.path) && f.path.slice(4, 14) <= day; }).sort(function (a, c) { return a.path < c.path ? 1 : -1; });
+        var mes = files.filter(function (f) { return f.path === 'mes-' + ym + '.json'; })[0];
+        var x = { zona: b.name.slice(6), dia: null, mes: null };
+        try {
+          if (days[0]) { x.dia = await openEnvelope(await blob(days[0].sha), st.me); x.diaExacto = days[0].path.slice(4, 14) === day; }
+          if (mes) x.mes = await openEnvelope(await blob(mes.sha), st.me);
+        } catch (e) { if (e.notMine) { notMine++; x.notMine = true; } else x.error = 'No se puede abrir (¿dañado?).'; }
+        out.push(x);
+      }
+      st.data = out; st.loaded = new Date().toISOString();
+      if (!out.length) st.msg = 'Todavía ningún local ha publicado su resumen.';
+      else if (notMine === out.length) st.msg = 'Este dispositivo ya no recibe los resúmenes (lo han revocado o todavía no se han publicado para él). Si es nuevo, espera un rato o pulsa «Publicar ahora» en un local.';
+    } catch (e) { st.msg = e.message; }
+    st.loading = false; draw();
+  }
+
+  /* ---------------- pantallas ---------------- */
+  function el(html) { var d = document.createElement('div'); d.innerHTML = html; return d; }
+  function screenAlta(code) {
+    topBtns.innerHTML = '';
+    app.innerHTML = '<div class="card"><h1>Dar de alta este dispositivo</h1><p class="hint">Escribe la <b>contraseña de alta</b> que se puso en el local al crear el código.</p>' + (st.msg ? '<div class="msg bad">' + esc(st.msg) + '</div>' : '') +
+      '<div class="field"><label>Contraseña de alta</label><input class="input" type="password" id="aPw" autocomplete="off"></div><div class="row"><button class="btn" id="aGo">Continuar</button></div></div>';
+    var go = document.getElementById('aGo');
+    go.onclick = async function () {
+      go.disabled = true; go.textContent = 'Comprobando…';
+      try { var me = await openAlta(code, document.getElementById('aPw').value); screenNewPw(me); }
+      catch (e) { st.msg = e.message; screenAlta(code); }
+    };
+    document.getElementById('aPw').focus();
+  }
+  function screenNewPw(me) {
+    st.msg = '';
+    app.innerHTML = '<div class="card"><h1>Contraseña de este dispositivo</h1><p class="hint">Elige la contraseña con la que abrirás el panel en <b>este</b> dispositivo (8 caracteres o más). Se queda aquí, cifrando la clave del dispositivo: no se manda a ningún sitio.</p><div id="nMsg"></div>' +
+      '<div class="field"><label>Contraseña</label><input class="input" type="password" id="nPw1" autocomplete="new-password"></div><div class="field"><label>Repítela</label><input class="input" type="password" id="nPw2" autocomplete="new-password"></div><div class="row"><button class="btn" id="nGo">Guardar y entrar</button></div></div>';
+    document.getElementById('nGo').onclick = async function () {
+      var a = document.getElementById('nPw1').value, b = document.getElementById('nPw2').value, m = document.getElementById('nMsg');
+      if (a.length < 8) { m.innerHTML = '<div class="msg bad">Tiene que tener al menos 8 caracteres.</div>'; return; }
+      if (a !== b) { m.innerHTML = '<div class="msg bad">Las dos no coinciden.</div>'; return; }
+      this.disabled = true; this.textContent = 'Guardando…';
+      await save(me, a); try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { }
+      st.me = me; load();
+    };
+  }
+  function screenLocked() {
+    var j = stored(); topBtns.innerHTML = '';
+    app.innerHTML = '<div class="card"><h1>Panel de empresa</h1>' + (st.msg ? '<div class="msg bad">' + esc(st.msg) + '</div>' : '') +
+      (j ? '<div class="field"><label>Contraseña de este dispositivo</label><input class="input" type="password" id="uPw" autocomplete="current-password"></div><div class="row"><button class="btn" id="uGo">Entrar</button><button class="btn ghost" id="uForget">Olvidar este dispositivo</button></div>'
+        : '<p class="hint">Este dispositivo no está dado de alta. Se hace desde un local: Ajustes → Empresa → Panel de empresa → «Añadir un dispositivo», y se abre aquí el código o el enlace.</p>') +
+      '</div><div class="card"><h2>Entrar con la clave de recuperación</h2><p class="hint">Para leer los resúmenes desde cualquier navegador si se han perdido los dispositivos. No se guarda nada en este navegador.</p><div class="field"><label>Clave de recuperación</label><textarea class="input" id="rKey" rows="3" placeholder="CSREC1.…"></textarea></div><div class="field"><label>Permiso de GitHub (solo lectura de ' + esc(cfg.repo) + ')</label><input class="input" type="password" id="rTok" autocomplete="off" placeholder="github_pat_…"></div><div class="row"><button class="btn light" id="rGo">Entrar</button></div></div>';
+    if (j) {
+      var go = document.getElementById('uGo');
+      go.onclick = async function () { go.disabled = true; go.textContent = 'Abriendo…'; try { st.me = await unlock(document.getElementById('uPw').value); st.msg = ''; load(); } catch (e) { st.msg = e.message; screenLocked(); } };
+      document.getElementById('uPw').onkeydown = function (e) { if (e.key === 'Enter') go.click(); };
+      document.getElementById('uForget').onclick = function () { if (confirm('Se borra de este dispositivo su clave del panel. Para volver a usarlo hay que darlo de alta otra vez desde un local. Para QUITAR otro dispositivo, hazlo desde un local (Ajustes → Empresa).')) { try { localStorage.removeItem(LS); } catch (e) { } st.msg = ''; screenLocked(); } };
+      document.getElementById('uPw').focus();
+    }
+    document.getElementById('rGo').onclick = function () { try { var me = readRecovery(document.getElementById('rKey').value); me.token = document.getElementById('rTok').value.trim(); if (!/^github_pat_/.test(me.token)) throw new Error('Falta el permiso de GitHub (empieza por github_pat_).'); st.me = me; st.msg = ''; load(); } catch (e) { st.msg = e.message; screenLocked(); } };
+  }
+  function kpi(l, v, sub) { return '<div class="kpi"><span>' + esc(l) + '</span><strong>' + v + '</strong>' + (sub ? '<small>' + sub + '</small>' : '') + '</div>'; }
+  function sign(v) { return '<span class="' + (v >= 0 ? 'pos' : 'neg') + '">' + money(v) + '</span>'; }
+  function name(x) { var l = (x.dia || x.mes || {}).local || {}; return l.ubicacion || l.nombre || x.zona; }
+  function sum(list, f) { return list.reduce(function (a, x) { return a + (Number(f(x)) || 0); }, 0); }
+  function draw() {
+    if (!st.me) return screenLocked();
+    topBtns.innerHTML = '<button id="tRe">Recargar</button> <button id="tOut">Salir</button>';
+    document.getElementById('tRe').onclick = function () { st.files = {}; load(); };
+    document.getElementById('tOut').onclick = function () { st.me = null; st.data = null; st.files = {}; screenLocked(); };
+    var h = '<div class="day"><button id="dPrev">‹</button><b>' + esc(fdate(st.day)) + '</b><button id="dNext"' + (st.day >= today() ? ' disabled' : '') + '>›</button></div>';
+    if (st.loading) h += '<div class="card"><p class="hint">Cargando y descifrando…</p></div>';
+    if (st.msg) h += '<div class="msg warn">' + esc(st.msg) + '</div>';
+    var d = (st.data || []).filter(function (x) { return x.dia || x.mes; });
+    if (d.length && !st.loading) {
+      h += '<div class="tabs" id="tabs">' + [['resumen', 'Resumen'], ['locales', 'Por local'], ['equipo', 'Equipo'], ['stock', 'Stock'], ['clientas', 'Clientas']].map(function (t) { return '<button data-t="' + t[0] + '" class="' + (st.tab === t[0] ? 'on' : '') + '">' + t[1] + '</button>'; }).join('') + '</div>';
+      var ym = st.day.slice(0, 7); var withDay = d.filter(function (x) { return x.dia && x.diaExacto; });
+      if (st.tab === 'resumen') {
+        var f = sum(withDay, function (x) { return x.dia.facturacion; }), c = sum(withDay, function (x) { return x.dia.cobros; }), g = sum(withDay, function (x) { return x.dia.gastos; });
+        h += '<div class="card"><h2>' + (st.day === today() ? 'Hoy' : esc(fdate(st.day))) + ' · todos los locales</h2><div class="kpis">' + kpi('Facturación', money(f)) + kpi('Cobros', c) + kpi('Ticket medio', money(c ? f / c : 0)) + kpi('Beneficio del día', sign(f - g), 'gastos ' + money(g)) + '</div>' +
+          '<div class="kpis" style="margin-top:8px">' + kpi('Citas', sum(withDay, function (x) { return x.dia.citas; })) + kpi('Por cobrar', sum(withDay, function (x) { return x.dia.porCobrar; })) + kpi('No vinieron', sum(withDay, function (x) { return x.dia.noVino; })) + kpi('Anulados', sum(withDay, function (x) { return x.dia.anulados; })) + '</div></div>';
+        var ms = d.filter(function (x) { return x.mes && x.mes.ym === ym; });
+        var mf = sum(ms, function (x) { return x.mes.facturacion; }), mg = sum(ms, function (x) { return x.mes.gastos; }), mc = sum(ms, function (x) { return x.mes.cobros; }), ly = sum(ms, function (x) { return (x.mes.anioAnterior || {}).facturacion; });
+        h += '<div class="card"><h2>' + esc(fmonth(ym)) + ' · todos los locales</h2><div class="kpis">' + kpi('Facturación', money(mf), ly ? 'año anterior ' + money(ly) + (ly ? ' (' + (mf >= ly ? '+' : '') + Math.round((mf - ly) / ly * 100) + ' %)' : '') : '') + kpi('Gastos', money(mg)) + kpi('Beneficio', sign(mf - mg)) + kpi('Ticket medio', money(mc ? mf / mc : 0), mc + ' cobros') + '</div>' +
+          '<div class="kpis" style="margin-top:8px">' + kpi('Bonos vendidos', sum(ms, function (x) { return x.mes.bonos.vendidos; }), money(sum(ms, function (x) { return x.mes.bonos.importe; }))) + kpi('Sesiones de bono', sum(ms, function (x) { return x.mes.bonos.sesiones; })) + kpi('Clientas nuevas', sum(ms, function (x) { return x.mes.nuevas; })) + kpi('Valor del stock', money(sum(ms, function (x) { return x.mes.stock.valor; }))) + '</div></div>';
+        h += '<div class="card"><h2>Comparativa entre locales · ' + esc(fmonth(ym)) + '</h2><table><thead><tr><th>Local</th><th class="n">Hoy</th><th class="n">Mes</th><th class="n">Beneficio</th><th class="n">Ticket</th></tr></thead><tbody>' + d.map(function (x) { var m = x.mes && x.mes.ym === ym ? x.mes : null; return '<tr><td><b>' + esc(name(x)) + '</b><br><small class="hint">' + (x.dia ? 'publicado ' + esc(rel(x.dia.at)) : '') + (x.dia && Date.now() - Date.parse(x.dia.at) > 3 * 3600e3 && st.day === today() ? ' <span class="tag warn">sin publicar</span>' : '') + '</small></td><td class="n">' + (x.dia && x.diaExacto ? money(x.dia.facturacion) : '—') + '</td><td class="n">' + (m ? money(m.facturacion) : '—') + '</td><td class="n">' + (m ? sign(m.beneficio) : '—') + '</td><td class="n">' + (m ? money(m.ticketMedio) : '—') + '</td></tr>'; }).join('') + '</tbody></table></div>';
+      }
+      if (st.tab === 'locales') d.forEach(function (x) {
+        var di = x.dia && x.diaExacto ? x.dia : null, m = x.mes && x.mes.ym === ym ? x.mes : null;
+        h += '<div class="card"><h2>' + esc(name(x)) + ' <small class="hint">' + (x.dia ? 'publicado ' + esc(rel(x.dia.at)) + ' · versión ' + esc(x.dia.version || '') : '') + '</small></h2>' +
+          (di ? '<div class="kpis">' + kpi('Hoy', money(di.facturacion), di.cobros + ' cobros') + kpi('Gastos hoy', money(di.gastos)) + kpi('Citas', di.citas, di.porCobrar + ' por cobrar') + kpi('Pagos', Object.keys(di.porMetodo || {}).map(function (k) { return esc(k) + ' ' + money(di.porMetodo[k]); }).join('<br>') || '—') + '</div>' : '<p class="hint">Sin resumen de ese día.</p>') +
+          (m ? '<h3>' + esc(fmonth(ym)) + '</h3><div class="kpis">' + kpi('Facturación', money(m.facturacion)) + kpi('Gastos', money(m.gastos)) + kpi('Beneficio', sign(m.beneficio)) + kpi('Ticket medio', money(m.ticketMedio)) + '</div>' +
+            '<h3>Servicios que más facturan</h3><table><tbody>' + (m.servicios || []).slice(0, 8).map(function (s) { return '<tr><td>' + esc(s.nombre) + '</td><td class="n">' + s.veces + '</td><td class="n">' + money(s.importe) + '</td></tr>'; }).join('') + '</tbody></table>' : '') + '</div>';
+      });
+      if (st.tab === 'equipo') d.forEach(function (x) { var m = x.mes && x.mes.ym === ym ? x.mes : null; if (!m) return;
+        h += '<div class="card"><h2>' + esc(name(x)) + '</h2><table><thead><tr><th>Persona</th><th class="n">Ventas</th><th class="n">Serv.</th><th class="n">Objetivo</th></tr></thead><tbody>' + (m.equipo || []).map(function (e) { return '<tr><td>' + esc(e.nombre) + '</td><td class="n">' + money(e.ventas) + '</td><td class="n">' + e.servicios + '</td><td class="n">' + (e.objetivo ? money(e.objetivo) + ' <span class="tag ' + (e.pct >= 100 ? 'ok' : e.pct >= 70 ? '' : 'warn') + '">' + e.pct + ' %</span>' : '—') + '</td></tr>'; }).join('') + '</tbody></table></div>'; });
+      if (st.tab === 'stock') d.forEach(function (x) { var m = x.mes && x.mes.ym === ym ? x.mes : null; if (!m) return;
+        h += '<div class="card"><h2>' + esc(name(x)) + ' <small class="hint">valor del stock ' + money(m.stock.valor) + '</small></h2>' + ((m.stock.bajos || []).length ? '<table><thead><tr><th>Bajo mínimos</th><th class="n">Hay</th><th class="n">Mínimo</th></tr></thead><tbody>' + m.stock.bajos.map(function (p) { return '<tr><td>' + esc(p.nombre) + '</td><td class="n">' + p.hay + '</td><td class="n">' + (p.minimo == null ? '—' : p.minimo) + '</td></tr>'; }).join('') + '</tbody></table>' : '<p class="hint">Nada por debajo del mínimo.</p>') + '</div>'; });
+      if (st.tab === 'clientas') d.forEach(function (x) { var m = x.mes && x.mes.ym === ym ? x.mes : null; if (!m) return;
+        h += '<div class="card"><h2>' + esc(name(x)) + ' <small class="hint">' + m.clientasAtendidas + ' atendidas · ' + m.nuevas + ' nuevas</small></h2><table><thead><tr><th>Clienta</th><th class="n">Cobros</th><th class="n">Gastado</th></tr></thead><tbody>' + (m.clientas || []).map(function (c) { return '<tr><td>' + esc(c.nombre) + '</td><td class="n">' + c.cobros + '</td><td class="n">' + money(c.gastado) + '</td></tr>'; }).join('') + '</tbody></table></div>'; });
+    }
+    h += '<p class="hint" style="text-align:center">' + (st.me.kid === 'recuperacion' ? 'Con la clave de recuperación · ' : '') + 'Solo lectura · ' + esc(cfg.repo) + '</p>';
+    app.innerHTML = h;
+    var tb = document.getElementById('tabs'); if (tb) tb.onclick = function (e) { var b = e.target.closest('[data-t]'); if (b) { st.tab = b.dataset.t; draw(); } };
+    document.getElementById('dPrev').onclick = function () { st.day = addDays(st.day, -1); load(); };
+    document.getElementById('dNext').onclick = function () { if (st.day < today()) { st.day = addDays(st.day, 1); load(); } };
+  }
+
+  /* ---------------- arranque ---------------- */
+  if (!C) { app.innerHTML = '<div class="card"><div class="msg bad">Este navegador no puede descifrar (hace falta https y un navegador actual).</div></div>'; return; }
+  if (!cfg.repo) { app.innerHTML = '<div class="card"><div class="msg bad">Esta página solo funciona desde su dirección de GitHub Pages.</div></div>'; return; }
+  var m = /#a=([A-Za-z0-9_-]+)/.exec(location.hash);
+  if (m) screenAlta(m[1]); else screenLocked();
+})();
+</script>
+</body>
+</html>
