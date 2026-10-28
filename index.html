@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="consentia-pagina" content="panel">
-<meta name="consentia-agenda-version" content="4.0.1">
-<meta name="consentia-agenda-firma" content="Tqc7GK82bm2IEKOXYTBWF3VN9v0hI3eUiL6U761OTJIkbJ11cav0ZV+s+LDQrJTJ6xSM3ZNOPTsWcN7sxZN4CQ==">
+<meta name="consentia-agenda-version" content="4.0.2">
+<meta name="consentia-agenda-firma" content="F5tHst/7tNF0tqvcnRLiObOyex+TlejUbp+R4NjK9DQgd7kvBuSRp52UicOHxWWTCDiRvciZRE073TtFS661Dw==">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'sha256-CXCShmty+d5IWSjLOEvdDX9amHS4F6xud5mtELX/GhE='; connect-src https://api.github.com; img-src data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'sha256-QCiim66WHECjGfz/1G/1YrscJhppRNbHvtb9h5tcKis='; connect-src https://api.github.com; img-src data:; base-uri 'none'; form-action 'none'">
 <meta name="theme-color" content="#111113">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -119,6 +119,7 @@ main{padding:12px 12px calc(84px + env(safe-area-inset-bottom));max-width:1240px
 .kpi strong{display:block;font-size:24px;letter-spacing:-.02em;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .kpi small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
 .kpi strong span{display:inline;font-size:inherit;font-weight:inherit;color:inherit}.kpi strong .pos{color:var(--good)}.kpi strong .neg{color:var(--bad)}
+.kpis.k3>.kpi:first-child{grid-column:1/-1}@media (min-width:600px){.kpis.k3{grid-template-columns:repeat(3,minmax(0,1fr))}.kpis.k3>.kpi:first-child{grid-column:auto}}
 .kpi.hero{background:var(--ink);color:#fff;border-color:var(--ink)}.kpi.hero span{color:#cfcbc4}.kpi.hero small{color:#b9b5ad}
 .pos{color:var(--good)}.neg{color:var(--bad)}.up{color:var(--good);font-weight:800}.down{color:var(--bad);font-weight:800}.kpi.hero .up{color:#7fe0a5}.kpi.hero .down{color:#ff9db8}
 .grid{display:grid;gap:12px}
@@ -168,6 +169,36 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .pct{display:inline-block;min-width:42px;text-align:center}
 .empty{color:var(--muted);font-size:13.5px;margin:4px 0}
 .foot2{text-align:center;color:var(--muted);font-size:12px;margin:18px 0 0}
+/* (4.0.2) el calendario de «Elegir día» (como el de la agenda) */
+.calBack{position:fixed;inset:0;z-index:20;background:rgba(17,17,19,.28)}
+.calBox{position:fixed;z-index:21;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 24px 60px -20px rgba(17,17,19,.45);padding:14px 14px 12px;width:320px}
+.calH{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.calH b{font-size:16px}
+.calNav{width:40px;height:38px;border:1px solid var(--line);background:#fff;border-radius:8px;font-size:20px;line-height:1}
+.calNav:disabled{opacity:.35}
+.calG{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+.calW{font-size:11px;font-weight:800;color:var(--muted);padding:4px 0}
+.calD{height:40px;border:0;background:transparent;border-radius:8px;font-size:15px;font-weight:700;color:var(--ink)}
+.calD:hover:not(:disabled){background:var(--bg)}
+.calD.out{color:#bdb9b1}.calD:disabled{color:#d4d0c8;cursor:default}
+.calD.today{color:var(--pink);font-weight:900}.calD.sel{background:var(--ink);color:#fff}
+.calF{display:flex;align-items:center;gap:12px;margin-top:8px}
+.calHoy{border:1px solid #bdb9b1;background:#fff;border-radius:6px;padding:8px 14px;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.05em}
+.calF small{color:var(--muted);font-size:12px}
+@media (max-width:599px){.calBox{left:0!important;right:0;bottom:0;top:auto!important;width:auto;border-radius:16px 16px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom))}.calD{height:44px}}
+/* (4.0.2) la rosquilla del equipo */
+.donutBox{display:grid;grid-template-columns:170px minmax(0,1fr);gap:16px;align-items:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--line2)}
+.donutBox svg{width:170px;height:170px;display:block}
+.donutBox path{cursor:pointer;transition:opacity .15s}
+.donutBox.hot path:not(.on){opacity:.3}
+.donutC{font-family:inherit}
+.dLeg{display:grid;gap:4px;font-size:13px}
+.dLeg button{display:flex;align-items:center;gap:8px;border:0;background:transparent;padding:5px 6px;border-radius:6px;text-align:left;width:100%}
+.dLeg button:hover,.dLeg button.on{background:var(--bg)}
+.dLeg i{width:10px;height:10px;border-radius:2px;flex:none}
+.dLeg span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dLeg b{font-variant-numeric:tabular-nums}.dLeg small{color:var(--muted);min-width:38px;text-align:right}
+@media (max-width:480px){.donutBox{grid-template-columns:1fr;justify-items:center}.dLeg{width:100%}}
+.legend .ln{display:inline-block;width:16px;height:0;border-top:2px solid #a20f3b;margin-right:6px;vertical-align:3px}
 .loading{display:flex;align-items:center;gap:10px;color:var(--muted)}
 .loading::before{content:"";width:16px;height:16px;border:2px solid var(--line);border-top-color:var(--pink);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -421,9 +452,9 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
     var nLoc = (st.data || []).length;
     app.innerHTML = '<aside class="side"><div class="brand"><img src="' + LOGO + '" alt=""><div><b>Consentia</b><small>Panel de empresa</small></div></div><div class="grp">' + (nLoc ? nLoc + (nLoc === 1 ? ' local' : ' locales') : 'Locales') + '</div>' +
       '<nav class="tabsNav"' + (st.loading ? '' : ' id="tabs"') + '>' + TABS.map(function (t) { return '<button data-t="' + t[0] + '" class="' + (st.tab === t[0] ? 'on' : '') + '">' + ico(t[0]) + '<span class="l1">' + t[1] + '</span><span class="l2">' + t[2] + '</span></button>'; }).join('') + '</nav>' +
-      '<div class="foot"><button id="sRe" type="button">Recargar</button><button id="sOut" type="button">Salir</button><small>' + (st.me.kid === 'recuperacion' ? 'Con la clave de recuperación' : 'Solo lectura') + '</small></div></aside>' +
+      '<div class="foot"><button id="sRe" type="button">Recargar</button><button id="sOut" type="button">Salir</button></div></aside>' +
       '<div class="mainCol"><div class="mtop"><img src="' + LOGO + '" alt=""><b>Panel</b><button id="tRe" type="button" aria-label="Recargar" title="Recargar">' + ico('reload') + '</button><button id="tOut" type="button" aria-label="Salir" title="Salir">' + ico('out') + '</button></div>' +
-      '<div class="days"><button id="dPrev" type="button" aria-label="Día anterior">‹</button><button class="hoy" id="dHoy" type="button"' + (st.day === today() ? ' disabled' : '') + '>Hoy</button><button class="d" type="button">' + ico('cal') + '<span>' + esc(cap(fdate(st.day))) + '</span><input type="date" id="dPick" max="' + today() + '" value="' + st.day + '" aria-label="Elegir el día"></button><button id="dNext" type="button" aria-label="Día siguiente"' + (st.day >= today() ? ' disabled' : '') + '>›</button><span class="upd">' + (st.loaded ? 'Actualizado ' + esc(rel(st.loaded)) : '') + '</span></div>' +
+      '<div class="days"><button id="dPrev" type="button" aria-label="Día anterior">‹</button><button class="hoy" id="dHoy" type="button"' + (st.day === today() ? ' disabled' : '') + '>Hoy</button><button class="d" id="dPick" type="button" aria-label="Elegir el día">' + ico('cal') + '<span>' + esc(cap(fdate(st.day))) + '</span></button><button id="dNext" type="button" aria-label="Día siguiente"' + (st.day >= today() ? ' disabled' : '') + '>›</button><span class="upd">' + (st.loaded ? 'Actualizado ' + esc(rel(st.loaded)) : '') + '</span></div>' +
       '<main id="main"></main></div>';
     var re = function () { st.files = {}; st.open = {}; load(); }, out = function () { st.me = null; st.data = null; st.files = {}; st.open = {}; st.tab = 'resumen'; screenLocked(); };
     document.getElementById('tRe').onclick = re; document.getElementById('sRe').onclick = re; document.getElementById('tOut').onclick = out; document.getElementById('sOut').onclick = out;
@@ -431,7 +462,7 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
     document.getElementById('dPrev').onclick = function () { st.day = addDays(st.day, -1); load(); };
     document.getElementById('dNext').onclick = function () { if (st.day < today()) { st.day = addDays(st.day, 1); load(); } };
     document.getElementById('dHoy').onclick = function () { st.day = today(); load(); };
-    document.getElementById('dPick').onchange = function () { var v = this.value; if (/^\d{4}-\d{2}-\d{2}$/.test(v) && v <= today()) { st.day = v; load(); } };
+    document.getElementById('dPick').onclick = function () { openCal(this); };
   }
   function draw() {
     if (!st.me) return screenLocked();
@@ -441,9 +472,10 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
     var all = st.data || []; all.forEach(function (x, i) { x.color = COLORS[i % COLORS.length]; });
     var d = all.filter(function (x) { return x.dia || x.mes; }), bad = all.filter(function (x) { return !(x.dia || x.mes) && (x.notMine || x.error); });
     if (d.length || bad.length) h += ({ resumen: tabResumen, locales: tabLocales, equipo: tabEquipo, stock: tabStock, clientas: tabClientas })[st.tab](d, bad);
-    h += '<p class="foot2">' + (st.me.kid === 'recuperacion' ? 'Con la clave de recuperación · ' : '') + 'Solo lectura · ' + esc(cfg.repo) + '</p>';
     main.innerHTML = h;
     var cols = document.getElementById('cols'); if (cols) columns(cols, d);
+    main.querySelectorAll('[data-cl]').forEach(function (el) { var x = d[+el.dataset.cl]; if (x) columns(el, [x], true); });
+    main.querySelectorAll('.donutBox').forEach(wireDonut);
   }
   function head(eb, title) { return '<div class="head"><div><div class="eb">' + esc(eb) + '</div><h1>' + esc(title) + '</h1></div><span class="sub">' + esc(cap(fdateY(st.day))) + '</span></div>'; }
   function unreadCard(x, wide) {
@@ -455,19 +487,19 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
   function unreadNote(bad) { return bad.length ? '<div class="msg warn">' + (bad.length === 1 ? 'Un local no se puede leer todavía' : bad.length + ' locales no se pueden leer todavía') + ' (' + bad.map(function (x) { return esc(zname(x.zona)); }).join(', ') + '): lo ves en «Por local».</div>' : ''; }
   function tabResumen(d, bad) {
     var ym = st.day.slice(0, 7), wk = addDays(st.day, -7), withDay = d.filter(function (x) { return x.dia && x.diaExacto; });
-    var f = sum(withDay, function (x) { return x.dia.facturacion; }), c = sum(withDay, function (x) { return x.dia.cobros; }), g = sum(withDay, function (x) { return x.dia.gastos; });
-    var fw = sum(d, function (x) { return (x.serie[wk] || {}).facturacion; }), cmp = fw ? '<span class="' + (f >= fw ? 'up' : 'down') + '">' + pctTxt(f, fw) + '</span> frente al ' + esc(fdate(wk).split(' ')[0]) + ' pasado' : (st.day === today() ? 'hasta ahora' : '');
+    var f = sum(withDay, function (x) { return x.dia.facturacion; }), c = sum(withDay, function (x) { return x.dia.cobros; }), g = sum(withDay, function (x) { return x.dia.gastosTotal != null ? x.dia.gastosTotal : x.dia.gastos; });
+    var fw = sum(d, function (x) { return (x.serie[wk] || {}).facturacion; }), cmp = fw ? '<span class="' + (f >= fw ? 'up' : 'down') + '">' + pctTxt(f, fw) + '</span> frente al ' + esc(new Date(wk + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'long' })) + ' pasado' : (st.day === today() ? 'hasta ahora' : '');
     var h = head('Todos los locales', st.day === today() ? 'Hoy' : cap(fdate(st.day))) + unreadNote(bad);
     h += '<div class="kpis">' + kpi('Facturación ' + (st.day === today() ? 'de hoy' : 'del día'), money(f), cmp, 'hero') + kpi('Cobros', c, 'ticket medio ' + money(c ? f / c : 0)) +
-      kpi('Citas', sum(withDay, function (x) { return x.dia.citas; }), sum(withDay, function (x) { return x.dia.porCobrar; }) + ' por cobrar · ' + sum(withDay, function (x) { return x.dia.noVino; }) + ' no vinieron') + kpi('Beneficio del día', sign(f - g), 'gastos ' + money(g)) + '</div>';
+      kpi('Citas', sum(withDay, function (x) { return x.dia.citas; }), sum(withDay, function (x) { return x.dia.porCobrar; }) + ' por cobrar · ' + sum(withDay, function (x) { return x.dia.noVino; }) + ' no vinieron') + kpi('Beneficio del día', sign(f - g), 'gastos ' + money(g) + (withDay.some(function (x) { return x.dia.gastosTotal != null; }) ? ' (con su parte de sueldos y fijos)' : '')) + '</div>';
     var pm = {}; withDay.forEach(function (x) { var m = x.dia.porMetodo || {}; Object.keys(m).forEach(function (k) { pm[k] = (pm[k] || 0) + (Number(m[k]) || 0); }); });
     var pk = Object.keys(pm).filter(function (k) { return pm[k] > 0; }).sort(function (a, b) { return pm[b] - pm[a]; }), pt = sum(pk, function (k) { return pm[k]; });
     var ms = d.filter(function (x) { return x.mes && x.mes.ym === ym; });
     var mf = sum(ms, function (x) { return x.mes.facturacion; }), mg = sum(ms, function (x) { return x.mes.gastos; }), mc = sum(ms, function (x) { return x.mes.cobros; }), ly = sum(ms, function (x) { return (x.mes.anioAnterior || {}).facturacion; });
     var maxM = Math.max.apply(null, ms.map(function (x) { return Math.max(x.mes.facturacion || 0, (x.mes.anioAnterior || {}).facturacion || 0); }).concat([1]));
-    var tot30 = 0; d.forEach(function (x) { Object.keys(x.serie).forEach(function (k) { tot30 += Number(x.serie[k].facturacion) || 0; }); });
+    var tot30 = 0, gas30 = 0; d.forEach(function (x) { Object.keys(x.serie).forEach(function (k) { tot30 += Number(x.serie[k].facturacion) || 0; gas30 += gastoDia(x.serie[k]); }); });
     h += '<div class="grid g2">' +
-      '<div class="card"><div class="ch"><h2>Facturación · últimos 30 días</h2><div class="legend">' + d.map(function (x) { return '<span><i style="background:' + x.color + '"></i>' + esc(name(x)) + '</span>'; }).join('') + '</div></div><div class="chart" id="cols"></div><p class="hint" style="margin:10px 0 0">Total de los 30 días: <b style="color:var(--ink)">' + money0(tot30) + '</b>. Los días sin barra, ese local no abrió o no tenía el programa abierto.</p></div>' +
+      '<div class="card"><div class="ch"><h2>Facturación y gastos · últimos 30 días</h2><div class="legend">' + d.map(function (x) { return '<span><i style="background:' + x.color + '"></i>' + esc(name(x)) + '</span>'; }).join('') + '<span><i class="ln"></i>Gastos</span></div></div><div class="chart" id="cols"></div><p class="hint" style="margin:10px 0 0">Total de los 30 días: <b style="color:var(--ink)">' + money0(tot30) + '</b> facturado y <b style="color:#a20f3b">' + money0(gas30) + '</b> de gastos (los del día y su parte de sueldos y gastos fijos). Los días sin barra, ese local no abrió o no tenía el programa abierto.</p></div>' +
       '<div class="card"><div class="ch"><h2>Formas de pago · ' + (st.day === today() ? 'hoy' : 'ese día') + '</h2><small>' + c + ' cobros</small></div>' +
         (pt ? '<div class="stack">' + pk.map(function (k) { return '<div title="' + esc(k) + '" style="flex:' + pm[k] + ';background:' + (PAYC[k] || '#6250d6') + '"></div>'; }).join('') + '</div><div class="pay">' + pk.map(function (k) { return '<div><i style="background:' + (PAYC[k] || '#6250d6') + '"></i>' + esc(k) + '<span style="color:var(--muted)">' + Math.round(pm[k] / pt * 100) + ' %</span><b class="num">' + money(pm[k]) + '</b></div>'; }).join('') + '</div>' : '<p class="empty">Ningún cobro ese día.</p>') +
         '<h3 style="border-top:1px solid var(--line2);padding-top:14px">Bonos y clientas · ' + esc(mname(ym)) + '</h3><div class="minis m2" style="grid-template-columns:1fr 1fr"><div class="mini"><span>Bonos vendidos</span><strong class="num">' + sum(ms, function (x) { return (x.mes.bonos || {}).vendidos; }) + '</strong><small>' + money0(sum(ms, function (x) { return (x.mes.bonos || {}).importe; })) + '</small></div><div class="mini"><span>Clientas nuevas</span><strong class="num">' + sum(ms, function (x) { return x.mes.nuevas; }) + '</strong><small>de ' + sum(ms, function (x) { return x.mes.clientasAtendidas; }) + ' atendidas</small></div></div></div>' +
@@ -479,11 +511,13 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
       '</tbody></table></div></div>';
     return h;
   }
-  // Columnas apiladas: un color por local, 30 días; al pasar el dedo o el ratón, las cifras de ese día.
-  function columns(el, d) {
-    var W = el.clientWidth || 600, H = W < 500 ? 170 : 220, pl = 40, pb = 22, n = 30, bw = (W - pl) / n, from = addDays(st.day, -29);
-    var days = []; for (var i = 0; i < n; i++) { var k = addDays(from, i); days.push({ k: k, v: d.map(function (x) { return Number((x.serie[k] || {}).facturacion) || 0; }) }); }
-    var max = Math.max.apply(null, days.map(function (x) { return sum(x.v, function (v) { return v; }); }).concat([1]));
+  function gastoDia(v) { return Number(v && (v.gastosTotal != null ? v.gastosTotal : v.gastos)) || 0; }
+  // Columnas apiladas: un color por local, 30 días, y (4.0.2) la línea de los gastos de cada día; al pasar el dedo o el
+  // ratón, las cifras de ese día.
+  function columns(el, d, small) {
+    var W = el.clientWidth || 600, H = small ? 140 : W < 500 ? 170 : 220, pl = 40, pb = 22, n = 30, bw = (W - pl) / n, from = addDays(st.day, -29);
+    var days = []; for (var i = 0; i < n; i++) { var k = addDays(from, i); days.push({ k: k, v: d.map(function (x) { return Number((x.serie[k] || {}).facturacion) || 0; }), g: sum(d, function (x) { return gastoDia(x.serie[k]); }), has: d.some(function (x) { return !!x.serie[k]; }) }); }
+    var max = Math.max.apply(null, days.map(function (x) { return Math.max(sum(x.v, function (v) { return v; }), x.g); }).concat([1]));
     var stepV = max > 4000 ? 2000 : max > 2000 ? 1000 : max > 800 ? 500 : max > 300 ? 200 : 100, top = Math.ceil(max / stepV) * stepV;
     var y = function (v) { return (H - pb) - v / top * (H - pb - 6); };
     var s = '<svg height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Facturación de los últimos 30 días">';
@@ -498,20 +532,26 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
       if ((n - 1 - i) % 7 === 0) s += '<text x="' + (x0 + w / 2) + '" y="' + (H - 6) + '" text-anchor="middle"' + (last ? ' style="fill:#111113;font-weight:700"' : '') + '>' + (last && st.day === today() ? 'hoy' : dd.getDate() + '/' + (dd.getMonth() + 1)) + '</text>';
       s += '<rect class="hit" data-i="' + i + '" x="' + (pl + i * bw) + '" y="0" width="' + bw + '" height="' + (H - pb) + '" fill="transparent"/>';
     });
+    // la línea de los gastos (solo los días con resumen)
+    var pts = days.map(function (x, i) { return x.has ? [pl + i * bw + bw / 2, y(x.g)] : null; });
+    var seg = [], segs2 = []; pts.forEach(function (p) { if (p) seg.push(p); else if (seg.length) { segs2.push(seg); seg = []; } }); if (seg.length) segs2.push(seg);
+    segs2.forEach(function (q) { if (q.length > 1) s += '<polyline points="' + q.map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ') + '" fill="none" stroke="#a20f3b" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>'; });
+    pts.forEach(function (p) { if (p) s += '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="3" fill="#a20f3b" stroke="#fff" stroke-width="1.5"/>'; });
     el.innerHTML = s + '</svg>';
     var move = function (e) { var pt = e.touches ? e.touches[0] : e; var r = document.elementFromPoint(pt.clientX, pt.clientY); r = r && r.closest && r.closest('.hit'); if (!r) { tip.style.display = 'none'; return; } var x = days[+r.dataset.i];
-      tip.innerHTML = '<b>' + esc(fdate(x.k)) + '</b>' + d.map(function (l, j) { return esc(name(l)) + ' ' + money(x.v[j]); }).join('<br>') + (d.length > 1 ? '<br><b>Total ' + money(sum(x.v, function (v) { return v; })) + '</b>' : '');
+      tip.innerHTML = '<b>' + esc(fdate(x.k)) + '</b>' + d.map(function (l, j) { return esc(name(l)) + ' ' + money(x.v[j]); }).join('<br>') + (d.length > 1 ? '<br><b>Total ' + money(sum(x.v, function (v) { return v; })) + '</b>' : '') + (x.has ? '<br>Gastos ' + money(x.g) + '<br><b>Beneficio ' + money(sum(x.v, function (v) { return v; }) - x.g) + '</b>' : '');
       var b = r.getBoundingClientRect(); tip.style.display = 'block'; tip.style.left = Math.min(innerWidth - 90, Math.max(90, b.left + b.width / 2)) + window.scrollX + 'px'; tip.style.top = (el.getBoundingClientRect().top + window.scrollY + 6) + 'px'; };
     el.onmousemove = move; el.ontouchstart = move; el.ontouchmove = move; el.onmouseleave = function () { tip.style.display = 'none'; };
   }
   function tabLocales(d, bad) {
     var ym = st.day.slice(0, 7); var h = head((d.length + bad.length) + ((d.length + bad.length) === 1 ? ' local' : ' locales') + ' en la empresa', 'Por local') + '<div class="grid g2b">';
-    d.forEach(function (x) {
+    d.forEach(function (x, xi) {
       var di = x.dia && x.diaExacto ? x.dia : null, m = x.mes && x.mes.ym === ym ? x.mes : null, sv = (m && m.servicios) || [], top = Math.max.apply(null, sv.map(function (s) { return s.importe; }).concat([1]));
       var late = x.dia && Date.now() - Date.parse(x.dia.at) > 3 * 3600e3 && st.day === today();
       h += '<div class="card loc" style="--c:' + x.color + '"><div class="lh"><span class="dot" style="background:' + x.color + '"></span><h2>' + esc(name(x)) + '</h2>' + (x.dia ? '<span class="pill ' + (late ? 'warn' : 'ok') + '">publicado ' + esc(rel(x.dia.at)) + (x.dia.version ? ' · ' + esc(x.dia.version) : '') + '</span>' : '') + '</div>' +
         '<div class="minis">' + (di ? '<div class="mini"><span>' + (st.day === today() ? 'Hoy' : 'Ese día') + '</span><strong class="num">' + money(di.facturacion) + '</strong><small>' + di.cobros + ' cobros</small></div><div class="mini"><span>Citas</span><strong class="num">' + di.citas + '</strong><small>' + di.porCobrar + ' por cobrar · ' + di.noVino + ' no vinieron</small></div>' : '<div class="mini"><span>' + (st.day === today() ? 'Hoy' : 'Ese día') + '</span><strong>—</strong><small>sin resumen de ese día</small></div><div class="mini"><span>Citas</span><strong>—</strong><small>&nbsp;</small></div>') +
         (m ? '<div class="mini"><span>' + esc(mname(ym)) + '</span><strong class="num">' + money0(m.facturacion) + '</strong><small>' + ((m.anioAnterior || {}).facturacion ? pctTxt(m.facturacion, m.anioAnterior.facturacion) + ' que el año pasado' : m.cobros + ' cobros') + '</small></div><div class="mini"><span>Beneficio del mes</span><strong class="num ' + (m.beneficio >= 0 ? 'pos' : 'neg') + '">' + money0(m.beneficio) + '</strong><small>gastos ' + money0(m.gastos) + '</small></div>' : '') + '</div>' +
+        '<h3>Facturación y gastos · 30 días <small style="font-weight:500;color:var(--muted)"><i class="ln" style="display:inline-block;width:14px;border-top:2px solid #a20f3b;vertical-align:3px;margin:0 4px 0 6px"></i>gastos</small></h3><div class="chart" data-cl="' + xi + '"></div>' +
         (di && Object.keys(di.porMetodo || {}).length ? '<h3>Formas de pago · ' + (st.day === today() ? 'hoy' : 'ese día') + '</h3><div class="pay">' + Object.keys(di.porMetodo).map(function (k) { return '<div><i style="background:' + (PAYC[k] || '#6250d6') + '"></i>' + esc(k) + '<b class="num">' + money(di.porMetodo[k]) + '</b></div>'; }).join('') + '</div>' : '') +
         (sv.length ? '<h3>Servicios que más facturan · ' + esc(mname(ym)) + '</h3><div class="svc">' + sv.slice(0, 6).map(function (s) { return '<div><span>' + esc(s.nombre) + '</span><span class="num" style="text-align:right;color:var(--muted)">' + s.veces + '</span><b class="num" style="text-align:right">' + money0(s.importe) + '</b><div class="bar"><i style="width:' + Math.round(s.importe / top * 100) + '%"></i></div></div>'; }).join('') + '</div>' : '') + '</div>';
     });
@@ -520,8 +560,8 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
   }
   function tabEquipo(d, bad) {
     var ym = st.day.slice(0, 7); var h = head('Equipo · ' + mname(ym), 'Equipo') + unreadNote(bad) + '<div class="grid g2b">';
-    d.forEach(function (x) { var m = x.mes && x.mes.ym === ym ? x.mes : null; if (!m) return; var eq = m.equipo || [], top = Math.max.apply(null, eq.map(function (e) { return e.ventas; }).concat([1]));
-      h += '<div class="card loc" style="--c:' + x.color + '"><div class="lh"><h2>' + esc(name(x)) + '</h2></div>' + (eq.length ? '<table><thead><tr><th>Persona</th><th class="n">Ventas</th><th class="n hide-m">Serv.</th><th class="n">Objetivo</th></tr></thead><tbody>' + eq.map(function (e) { return '<tr><td><b>' + esc(e.nombre) + '</b><div class="track" style="height:4px;margin-top:6px;background:var(--line2)"><div class="fill" style="width:' + (e.ventas / top * 100).toFixed(1) + '%;background:var(--pink)"></div></div></td><td class="n">' + money0(e.ventas) + '</td><td class="n hide-m">' + e.servicios + '</td><td class="n">' + (e.objetivo ? '<span class="pill ' + (e.pct >= 100 ? 'ok' : e.pct >= 70 ? '' : 'warn') + ' pct">' + e.pct + ' %</span>' : '—') + '</td></tr>'; }).join('') + '</tbody></table>' : '<p class="empty">Sin ventas este mes.</p>') + '</div>'; });
+    d.forEach(function (x) { var m = x.mes && x.mes.ym === ym ? x.mes : null; if (!m) return; var eq = m.equipo || [];
+      h += '<div class="card loc" style="--c:' + x.color + '"><div class="lh"><h2>' + esc(name(x)) + '</h2></div>' + (eq.length ? '<table><thead><tr><th>Persona</th><th class="n">Ventas</th><th class="n hide-m">Serv.</th><th class="n">Objetivo</th></tr></thead><tbody>' + eq.map(function (e) { return '<tr><td><b>' + esc(e.nombre) + '</b></td><td class="n">' + money0(e.ventas) + '</td><td class="n hide-m">' + e.servicios + '</td><td class="n">' + (e.objetivo ? '<span class="pill ' + (e.pct >= 100 ? 'ok' : e.pct >= 70 ? '' : 'warn') + ' pct">' + e.pct + ' %</span>' : '—') + '</td></tr>'; }).join('') + '</tbody></table>' + donut(eq) : '<p class="empty">Sin ventas este mes.</p>') + '</div>'; });
     return h + '</div>';
   }
   function tabStock(d, bad) {
@@ -530,12 +570,62 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
       h += '<div class="card loc" style="--c:' + x.color + '"><div class="lh"><h2>' + esc(name(x)) + '</h2><span class="pill">valor ' + money0((m.stock || {}).valor) + '</span></div>' + (b.length ? '<table><thead><tr><th>Por reponer</th><th class="n">Hay</th><th class="n">Mínimo</th></tr></thead><tbody>' + b.map(function (p) { return '<tr><td>' + esc(p.nombre) + '</td><td class="n' + (p.hay <= 0 ? ' neg' : '') + '">' + p.hay + '</td><td class="n">' + (p.minimo == null ? '—' : p.minimo) + '</td></tr>'; }).join('') + '</tbody></table>' : '<p class="empty">Nada por debajo del mínimo.</p>') + '</div>'; });
     return h + '</div>';
   }
+  // (4.0.2) Clientas: solo atendidas, nuevas y ticket medio (sin el listado).
   function tabClientas(d, bad) {
-    var ym = st.day.slice(0, 7); var h = head('Clientas · ' + mname(ym), 'Clientas') + unreadNote(bad) + '<div class="grid g2b">';
-    d.forEach(function (x) { var m = x.mes && x.mes.ym === ym ? x.mes : null; if (!m) return;
-      h += '<div class="card loc" style="--c:' + x.color + '"><div class="lh"><h2>' + esc(name(x)) + '</h2><span class="pill">' + m.clientasAtendidas + ' atendidas · ' + m.nuevas + ' nuevas</span></div>' + ((m.clientas || []).length ? '<table><thead><tr><th>Clienta</th><th class="n">Cobros</th><th class="n">Gastado</th></tr></thead><tbody>' + m.clientas.slice(0, 25).map(function (c) { return '<tr><td>' + esc(c.nombre) + '</td><td class="n">' + c.cobros + '</td><td class="n">' + money(c.gastado) + '</td></tr>'; }).join('') + '</tbody></table>' : '<p class="empty">Sin cobros a clientas este mes.</p>') + '</div>'; });
+    var ym = st.day.slice(0, 7); var ms = d.filter(function (x) { return x.mes && x.mes.ym === ym; });
+    var at = sum(ms, function (x) { return x.mes.clientasAtendidas; }), nu = sum(ms, function (x) { return x.mes.nuevas; }), f = sum(ms, function (x) { return x.mes.facturacion; }), c = sum(ms, function (x) { return x.mes.cobros; });
+    var h = head('Clientas · ' + mname(ym), 'Clientas') + unreadNote(bad);
+    h += '<div class="kpis k3">' + kpi('Atendidas', at, 'todos los locales', 'hero') + kpi('Nuevas', nu, at ? Math.round(nu / at * 100) + ' % de las atendidas' : '') + kpi('Ticket medio', money(c ? f / c : 0), c + ' cobros') + '</div><div class="grid g2b">';
+    ms.forEach(function (x) { var m = x.mes;
+      h += '<div class="card loc" style="--c:' + x.color + '"><div class="lh"><span class="dot" style="background:' + x.color + '"></span><h2>' + esc(name(x)) + '</h2></div><div class="minis" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div class="mini"><span>Atendidas</span><strong class="num">' + (m.clientasAtendidas || 0) + '</strong></div><div class="mini"><span>Nuevas</span><strong class="num">' + (m.nuevas || 0) + '</strong></div><div class="mini"><span>Ticket medio</span><strong class="num">' + money(m.ticketMedio || 0) + '</strong></div></div></div>'; });
     return h + '</div>';
   }
+  // (4.0.2) Rosquilla de lo que ha generado cada una sobre el total del local; al pasar el ratón o tocar, sus cifras.
+  var DCOL = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#008300', '#6250d6', '#e34948'];
+  function donut(eq) {
+    var list = eq.filter(function (e) { return e.ventas > 0; }).sort(function (a, b) { return b.ventas - a.ventas; });
+    if (list.length > 8) { var rest = list.slice(7); list = list.slice(0, 7).concat([{ nombre: 'Otras', ventas: sum(rest, function (e) { return e.ventas; }), otras: true }]); }
+    var tot = sum(list, function (e) { return e.ventas; }); if (!tot) return '';
+    var R = 80, r = 52, cx = 85, cy = 85, a0 = -Math.PI / 2, segs = '';
+    list.forEach(function (e, i) { var frac = e.ventas / tot, a1 = a0 + frac * Math.PI * 2, gap = list.length > 1 ? 0.012 : 0; var s0 = a0 + gap, s1 = a1 - gap; var big = s1 - s0 > Math.PI ? 1 : 0;
+      var P = function (rr, a) { return (cx + rr * Math.cos(a)).toFixed(2) + ' ' + (cy + rr * Math.sin(a)).toFixed(2); };
+      var dd = frac >= 0.9999 ? 'M' + P(R, 0) + 'A' + R + ' ' + R + ' 0 1 1 ' + P(R, Math.PI) + 'A' + R + ' ' + R + ' 0 1 1 ' + P(R, 0) + 'M' + P(r, 0) + 'A' + r + ' ' + r + ' 0 1 0 ' + P(r, Math.PI) + 'A' + r + ' ' + r + ' 0 1 0 ' + P(r, 0) + 'Z'
+        : 'M' + P(R, s0) + 'A' + R + ' ' + R + ' 0 ' + big + ' 1 ' + P(R, s1) + 'L' + P(r, s1) + 'A' + r + ' ' + r + ' 0 ' + big + ' 0 ' + P(r, s0) + 'Z';
+      segs += '<path d="' + dd + '" fill="' + (e.otras ? '#b8b4ac' : DCOL[i % DCOL.length]) + '" fill-rule="evenodd" data-i="' + i + '"><title>' + esc(e.nombre) + ': ' + money0(e.ventas) + '</title></path>'; a0 = a1; });
+    var data = esc(JSON.stringify(list.map(function (e) { return [e.nombre, e.ventas]; })));
+    return '<div class="donutBox" data-tot="' + tot + '" data-list="' + data + '"><svg viewBox="0 0 170 170" role="img" aria-label="Lo que ha generado cada una">' + segs +
+      '<text class="donutC" x="85" y="80" text-anchor="middle" font-size="11" fill="#77736c" id="dcA">Total del local</text><text class="donutC" x="85" y="98" text-anchor="middle" font-size="16" font-weight="800" fill="#111113">' + money0(tot) + '</text></svg>' +
+      '<div class="dLeg">' + list.map(function (e, i) { return '<button type="button" data-i="' + i + '"><i style="background:' + (e.otras ? '#b8b4ac' : DCOL[i % DCOL.length]) + '"></i><span>' + esc(e.nombre) + '</span><b>' + money0(e.ventas) + '</b><small>' + Math.round(e.ventas / tot * 100) + ' %</small></button>'; }).join('') + '</div></div>';
+  }
+  function wireDonut(box) {
+    var list = JSON.parse(box.dataset.list || '[]'), tot = Number(box.dataset.tot) || 0, t = box.querySelectorAll('text.donutC'), lock = null;
+    var show = function (i) { box.classList.toggle('hot', i != null); box.querySelectorAll('path,.dLeg button').forEach(function (n) { n.classList.toggle('on', i != null && n.dataset.i === String(i)); });
+      if (i == null) { t[0].textContent = 'Total del local'; t[1].textContent = money0(tot); } else { var e = list[i]; t[0].textContent = e[0].length > 18 ? e[0].slice(0, 17) + '…' : e[0]; t[1].textContent = money0(e[1]) + ' · ' + Math.round(e[1] / tot * 100) + ' %'; } };
+    box.addEventListener('mouseover', function (e) { var n = e.target.closest('[data-i]'); if (n && lock == null) show(+n.dataset.i); });
+    box.addEventListener('mouseleave', function () { if (lock == null) show(null); });
+    box.addEventListener('click', function (e) { var n = e.target.closest('[data-i]'); if (!n) { lock = null; show(null); return; } var i = +n.dataset.i; lock = lock === i ? null : i; show(lock); });
+  }
+  // (4.0.2) «Elegir día»: un calendario como el de la agenda (no se puede elegir un día que todavía no ha llegado).
+  function openCal(btn) {
+    closeCal(); var cur = st.day.slice(0, 7), t = today();
+    var back = document.createElement('div'); back.className = 'calBack'; back.id = 'calBack';
+    var box = document.createElement('div'); box.className = 'calBox'; box.id = 'calBox'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-label', 'Elegir el día');
+    var paint = function () {
+      var y = +cur.slice(0, 4), mo = +cur.slice(5, 7), first = new Date(y, mo - 1, 1), lead = (first.getDay() + 6) % 7, dim = new Date(y, mo, 0).getDate();
+      var cells = ''; for (var i = 0; i < lead; i++) cells += '<span></span>';
+      for (var dd = 1; dd <= dim; dd++) { var k = cur + '-' + pad(dd); cells += '<button type="button" class="calD' + (k === t ? ' today' : '') + (k === st.day ? ' sel' : '') + '" data-k="' + k + '"' + (k > t ? ' disabled' : '') + '>' + dd + '</button>'; }
+      box.innerHTML = '<div class="calH"><button type="button" class="calNav" data-m="-1" aria-label="Mes anterior">‹</button><b>' + esc(cap(fmonth(cur))) + '</b><button type="button" class="calNav" data-m="1" aria-label="Mes siguiente"' + (cur >= t.slice(0, 7) ? ' disabled' : '') + '>›</button></div>' +
+        '<div class="calG">' + ['L', 'M', 'X', 'J', 'V', 'S', 'D'].map(function (w) { return '<span class="calW">' + w + '</span>'; }).join('') + cells + '</div><div class="calF"><button type="button" class="calHoy" data-k="' + t + '">Hoy</button><small>Elige un día para ver sus cifras.</small></div>';
+    };
+    paint(); document.body.appendChild(back); document.body.appendChild(box);
+    var r = btn.getBoundingClientRect(); box.style.top = (r.bottom + 6) + 'px'; box.style.left = Math.max(8, Math.min(innerWidth - 328, r.left)) + 'px';
+    back.onclick = closeCal;
+    box.onclick = function (e) { var m = e.target.closest('[data-m]'); if (m && !m.disabled) { var d0 = new Date(+cur.slice(0, 4), +cur.slice(5, 7) - 1 + Number(m.dataset.m), 1); cur = d0.getFullYear() + '-' + pad(d0.getMonth() + 1); paint(); return; }
+      var k = e.target.closest('[data-k]'); if (k && !k.disabled) { closeCal(); if (k.dataset.k !== st.day) { st.day = k.dataset.k; load(); } } };
+    document.addEventListener('keydown', calKey);
+  }
+  function calKey(e) { if (e.key === 'Escape') closeCal(); }
+  function closeCal() { ['calBack', 'calBox'].forEach(function (id) { var n = document.getElementById(id); if (n) n.remove(); }); document.removeEventListener('keydown', calKey); }
 
   /* ---------------- arranque ---------------- */
   var rz; addEventListener('resize', function () { clearTimeout(rz); rz = setTimeout(function () { if (document.documentElement.className === 'lock') logoField(); else { var c = document.getElementById('cols'); if (c && st.data) columns(c, st.data.filter(function (x) { return x.dia || x.mes; })); } }, 200); });
