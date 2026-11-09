@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="consentia-pagina" content="panel">
-<meta name="consentia-agenda-version" content="4.1.1">
-<meta name="consentia-agenda-firma" content="1LvAt9ouGZdnh96MVinglSTl+yXTLHS0n9NRpQJs586Ab0geBWbvTGTsB5y1xe/XMWsc2oJHbswh9OzcYb5iBA==">
+<meta name="consentia-agenda-version" content="4.1.2">
+<meta name="consentia-agenda-firma" content="PDn7C4eQfiwMGwWkGOdEP+WYc1h8WLNK1fRYX2af5RIz8aH+ps1g4rTUK831Si5dKlnz46jE8RFyGuC2n0GjCg==">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'sha256-QCiim66WHECjGfz/1G/1YrscJhppRNbHvtb9h5tcKis='; connect-src https://api.github.com; img-src data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'sha256-F+am7tDy4snKNpRTBJRB4zFW9n8uHXkmVlBVGtmdJgs='; connect-src https://api.github.com; img-src data:; base-uri 'none'; form-action 'none'">
 <meta name="theme-color" content="#111113">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -334,11 +334,16 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
         var days = files.filter(function (f) { return /^dia-\d{4}-\d{2}-\d{2}\.json$/.test(f.path) && f.path.slice(4, 14) <= day; }).sort(function (a, c) { return a.path < c.path ? 1 : -1; });
         var mes = files.filter(function (f) { return f.path === 'mes-' + ym + '.json'; })[0];
         var x = { zona: b.name.slice(6), dia: null, mes: null, serie: {}, last: days[0] ? days[0].path.slice(4, 14) : null };
+        // (4.1.2) Todo el histórico: los días de hace más de 2 meses van dentro del archivo de su mes («dias»).
+        var mesOf = async function (k) { var f = files.filter(function (g) { return g.path === 'mes-' + k + '.json'; })[0]; return f ? await opened(f.sha) : null; };
         try {
           if (days[0]) { x.dia = await opened(days[0].sha); x.diaExacto = days[0].path.slice(4, 14) === day; }
           if (mes) x.mes = await opened(mes.sha);
+          if (!x.diaExacto && x.mes && x.mes.dias && x.mes.dias[day]) { x.dia = x.mes.dias[day]; x.diaExacto = true; }
           var win = days.filter(function (f) { return f.path.slice(4, 14) >= from; });
           for (var k = 0; k < win.length; k++) { try { var v = await opened(win[k].sha); x.serie[win[k].path.slice(4, 14)] = v; } catch (e2) { /* uno suelto: se salta */ } }
+          var yms = [from.slice(0, 7), ym].filter(function (v2, i2, a2) { return a2.indexOf(v2) === i2; });
+          for (var q = 0; q < yms.length; q++) { try { var mm = yms[q] === ym ? x.mes : await mesOf(yms[q]); var dd2 = (mm && mm.dias) || {}; Object.keys(dd2).forEach(function (kk) { if (kk >= from && kk <= day && !x.serie[kk]) x.serie[kk] = dd2[kk]; }); } catch (e3) { /* sin ese mes */ } }
         } catch (e) { if (e.notMine) { notMine++; x.notMine = true; } else x.error = 'No se puede abrir (¿dañado?).'; }
         out.push(x);
       }
@@ -631,8 +636,14 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
   var rz; addEventListener('resize', function () { clearTimeout(rz); rz = setTimeout(function () { if (document.documentElement.className === 'lock') logoField(); else { var c = document.getElementById('cols'); if (c && st.data) columns(c, st.data.filter(function (x) { return x.dia || x.mes; })); } }, 200); });
   if (!C) { app.innerHTML = '<div class="lwrap"><div class="lcard"><div class="msg bad">Este navegador no puede descifrar (hace falta https y un navegador actual).</div></div></div>'; return; }
   if (!cfg.repo) { app.innerHTML = '<div class="lwrap"><div class="lcard"><div class="msg bad">Esta página solo funciona desde su dirección de GitHub Pages.</div></div></div>'; return; }
+  // (4.1.2) Si este dispositivo YA está dado de alta y se abre otra vez el enlace (o el QR) de alta, no se vuelve a dar de
+  // alta: se quita el código de la dirección y se pide solo la contraseña del dispositivo. Para darlo de alta otra vez,
+  // «Olvidar este dispositivo». Y se pide al navegador que no borre lo guardado (si lo permite).
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function () { }); } catch (e) { }
   var m = /#a=([A-Za-z0-9_-]+)/.exec(location.hash);
-  if (m) screenAlta(m[1]); else screenLocked();
+  if (m && stored()) { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { } st.msg = ''; screenLocked(); }
+  else if (m) screenAlta(m[1]); else screenLocked();
+  window.addEventListener('hashchange', function () { var h = /#a=([A-Za-z0-9_-]+)/.exec(location.hash); if (!h) return; try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { } if (stored()) { st.me = null; st.msg = ''; screenLocked(); } else screenAlta(h[1]); });
 })();
 </script>
 </body>
