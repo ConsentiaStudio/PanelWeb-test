@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="consentia-pagina" content="panel">
-<meta name="consentia-agenda-version" content="4.1.3">
-<meta name="consentia-agenda-firma" content="JLc8TuvCvRQb4LXhK3ieczznyQsKpQKkVJyrsvUVqGg4+I3KJRlbBD3ngIBQ/bSV8hqxlGpBObWSOhOtFOaMBw==">
+<meta name="consentia-agenda-version" content="4.2.0">
+<meta name="consentia-agenda-firma" content="3YCg5OyWlMjz6J1zxqzWIHYS95TNPmJTqAyqdX0JCS89U58V+gfwjRFBnwKM3A6fdmI9OmqCIb9NILiweUUADw==">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'sha256-F+am7tDy4snKNpRTBJRB4zFW9n8uHXkmVlBVGtmdJgs='; connect-src https://api.github.com; img-src data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'sha256-G3zMqrjaHR2Jayzt/PsYJH5PN0bjQfg2DqyNM58Pn1Q='; connect-src https://api.github.com https://raw.githubusercontent.com; img-src data:; base-uri 'none'; form-action 'none'">
 <meta name="theme-color" content="#111113">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -88,6 +88,22 @@ main{padding:12px 12px calc(84px + env(safe-area-inset-bottom));max-width:1240px
 .tabsNav button{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:700;color:var(--muted);padding:4px 0}
 .tabsNav button.on{color:var(--pink)}
 .tabsNav button .l2{display:none}
+/* (4.2.0) Dentro de la app del móvil (numeros.html, pestaña «Números»): sin cabecera ni «Salir» (los pone la app) y con
+   las pestañas arriba, en cualquier ancho. */
+body.embed .mtop{display:none}
+body.embed .tabsNav{position:static;display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border:0;border-bottom:1px solid var(--line);padding:6px 4px}
+body.embed .days{top:0}
+body.embed main{padding-bottom:28px}
+@media (min-width:900px){
+  body.dash.embed #app{display:block}
+  body.embed .side{position:static;height:auto;padding:0;background:#fff;display:block}
+  body.embed .side .brand,body.embed .side .grp,body.embed .side .foot{display:none}
+  body.embed .tabsNav button{flex-direction:column;align-items:center;gap:2px;font-size:12px;font-weight:700;color:var(--muted);padding:6px 0;text-align:center;width:auto}
+  body.embed .tabsNav button:hover{background:none}
+  body.embed .tabsNav button.on{background:none;color:var(--pink)}
+  body.embed .tabsNav button.on::before{display:none}
+  body.embed .tabsNav button .l1{display:inline}body.embed .tabsNav button .l2{display:none}
+}
 @media (min-width:900px){
   body.dash #app{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:100vh}
   .mtop{display:none}
@@ -217,11 +233,14 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
   var app = document.getElementById('app'), tip = document.getElementById('tip');
   // Dónde están los resúmenes: https://USUARIO.github.io/PanelWeb(-test)/ → USUARIO/Panel(-test). (En este ordenador,
   // solo para pruebas: ?repo=…&api=….)
+  // (4.2.0) Como numeros.html, dentro de la app (repositorio App, ramas «cs-num-<zona>», públicas pero cifradas para
+  // cada móvil): no pide nada; la app le pasa la clave de ese móvil (sin que se pueda sacar) y lee sin permiso de GitHub.
   var cfg = (function () {
     var q = new URLSearchParams(location.search), h = location.hostname, seg = location.pathname.split('/').filter(Boolean);
-    if (/\.github\.io$/i.test(h) && seg.length) return { repo: h.split('.')[0] + '/' + seg[0].replace(/^PanelWeb/i, 'Panel'), api: 'https://api.github.com', local: false };
+    var v2 = /\/numeros\.html$/i.test(location.pathname);
+    if (/\.github\.io$/i.test(h) && seg.length) return v2 ? { repo: h.split('.')[0] + '/' + seg[0], api: 'https://api.github.com', raw: 'https://raw.githubusercontent.com', local: false, v2: true } : { repo: h.split('.')[0] + '/' + seg[0].replace(/^PanelWeb/i, 'Panel'), api: 'https://api.github.com', local: false };
     if (h !== 'localhost' && h !== '127.0.0.1') return { repo: '', api: '', local: false };
-    return { repo: q.get('repo') || '', api: q.get('api') || 'https://api.github.com', local: true };
+    return { repo: q.get('repo') || '', api: q.get('api') || 'https://api.github.com', raw: q.get('raw') || 'https://raw.githubusercontent.com', local: true, v2: v2 || q.get('embed') === '1' };
   })();
   // Esta página no usa «service workers»: si alguien hubiera instalado uno, se quita.
   try { if (navigator.serviceWorker) navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); }).catch(function () {}); } catch (e) { }
@@ -299,7 +318,7 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
   async function openEnvelope(text, me) {
     var e = JSON.parse(text); if (e.f !== FORMAT) throw new Error('No es un resumen del panel.');
     var kid = me.kid || me.id; var mine = (e.r || []).filter(function (r) { return r.k === kid; })[0]; if (!mine) { var err = new Error('sin-mi'); err.notMine = true; throw err; }
-    var priv = await C.importKey('jwk', { kty: 'EC', crv: 'P-256', x: me.x, y: me.y, d: me.d, ext: true }, { name: 'ECDH', namedCurve: 'P-256' }, false, ['deriveBits']);
+    var priv = me.key || await C.importKey('jwk', { kty: 'EC', crv: 'P-256', x: me.x, y: me.y, d: me.d, ext: true }, { name: 'ECDH', namedCurve: 'P-256' }, false, ['deriveBits']); // (4.2.0) me.key: la de la app
     var pub = await C.importKey('jwk', { kty: 'EC', crv: 'P-256', x: e.epk.x, y: e.epk.y, ext: true }, { name: 'ECDH', namedCurve: 'P-256' }, false, []);
     var shared = await C.deriveBits({ name: 'ECDH', public: pub }, priv, 256);
     var hk = await C.importKey('raw', shared, 'HKDF', false, ['deriveKey']);
@@ -321,8 +340,41 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
   }
   async function blob(sha) { if (st.files[sha]) return st.files[sha]; var b = await gh('/repos/' + cfg.repo + '/git/blobs/' + sha); var t = dec.decode(unb64(b.content)); st.files[sha] = t; return t; }
   async function opened(sha) { if (st.open[sha]) return st.open[sha]; var v = await openEnvelope(await blob(sha), st.me); st.open[sha] = v; return v; }
+  // (4.2.0) Dentro de la app: sin permiso (App es público; lo de dentro va cifrado). Las ramas, de la API; los archivos,
+  // de raw.githubusercontent.com por la huella de la rama (lo último publicado).
+  async function anon(url) { var r; try { r = await fetch(url, { cache: 'no-store', credentials: 'omit', referrerPolicy: 'no-referrer' }); } catch (e) { throw new Error('Sin conexión con GitHub (¿hay Internet?).'); } if (r.status === 404) return null; if (r.status === 403 || r.status === 429) throw new Error('GitHub limita las consultas seguidas desde esta conexión. Espera unos minutos y vuelve a intentarlo.'); if (!r.ok) throw new Error('GitHub respondió ' + r.status + '.'); return r.text(); }
+  async function rawOpen(base, name) { var u = base + name; if (!(u in st.files)) st.files[u] = await anon(u); var t = st.files[u]; if (!t) return null; if (!st.open[u]) { var e = JSON.parse(t); if (e.n !== name) throw new Error('No es el que toca.'); st.open[u] = await openEnvelope(t, st.me); } return st.open[u]; }
+  async function loadV2() {
+    st.loading = true; st.msg = ''; draw();
+    try {
+      var br = JSON.parse(await anon(cfg.api + '/repos/' + cfg.repo + '/branches?per_page=100') || '[]');
+      var locals = (br || []).filter(function (b) { return /^cs-num-[a-z0-9][a-z0-9-]{0,59}$/.test(b.name) && /^[0-9a-f]{40,64}$/.test((b.commit || {}).sha || ''); });
+      var out = [], day = st.day, ym = day.slice(0, 7), from = addDays(day, -29), notMine = 0;
+      for (var i = 0; i < locals.length; i++) {
+        var b = locals[i], base = cfg.raw + '/' + cfg.repo + '/' + b.commit.sha + '/';
+        var x = { zona: b.name.slice(7), dia: null, mes: null, serie: {}, last: null };
+        try {
+          var ds = []; for (var k = 0; k < 30; k++) ds.push(addDays(from, k));
+          var got = await Promise.all(ds.map(function (k2) { return rawOpen(base, 'dia-' + k2 + '.json').catch(function (e) { if (e.notMine) throw e; return null; }); }));
+          ds.forEach(function (k2, j) { if (got[j]) x.serie[k2] = got[j]; });
+          x.dia = x.serie[day] || null; x.diaExacto = !!x.dia;
+          x.mes = await rawOpen(base, 'mes-' + ym + '.json');
+          if (!x.diaExacto && x.mes && x.mes.dias && x.mes.dias[day]) { x.dia = x.mes.dias[day]; x.diaExacto = true; }
+          var yms = [from.slice(0, 7), ym].filter(function (v2, i2, a2) { return a2.indexOf(v2) === i2; });
+          for (var q = 0; q < yms.length; q++) { try { var mm = yms[q] === ym ? x.mes : await rawOpen(base, 'mes-' + yms[q] + '.json'); var dd2 = (mm && mm.dias) || {}; Object.keys(dd2).forEach(function (kk) { if (kk >= from && kk <= day && !x.serie[kk]) x.serie[kk] = dd2[kk]; }); } catch (e3) { /* sin ese mes */ } }
+          if (!x.dia && !x.mes) continue;
+        } catch (e) { if (e.notMine) { notMine++; x.notMine = true; } else x.error = 'No se puede abrir (¿dañado?).'; }
+        out.push(x);
+      }
+      st.data = out; st.loaded = new Date().toISOString();
+      if (!out.length) st.msg = 'Todavía no hay números de ningún local para ese día.';
+      else if (notMine === out.length) st.msg = 'Los números todavía no se han publicado para este móvil: llegan en unos minutos.';
+    } catch (e) { st.msg = e.message; }
+    st.loading = false; draw();
+  }
   // Lo de cada local: el día elegido (o el último anterior), el mes y los 30 días de antes para la gráfica.
   async function load() {
+    if (cfg.v2) return loadV2();
     st.loading = true; st.msg = ''; draw();
     try {
       var br = await gh('/repos/' + cfg.repo + '/branches?per_page=100');
@@ -470,8 +522,8 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
     document.getElementById('dPick').onclick = function () { openCal(this); };
   }
   function draw() {
-    if (!st.me) return screenLocked();
-    shell(); var main = document.getElementById('main'); var h = '';
+    if (!st.me) return cfg.v2 ? null : screenLocked();
+    shell(); if (cfg.v2) document.body.classList.add('embed'); var main = document.getElementById('main'); var h = '';
     if (st.loading) { main.innerHTML = '<div class="card"><p class="loading">Cargando y descifrando…</p></div>'; return; }
     if (st.msg) h += '<div class="msg warn">' + esc(st.msg) + '</div>';
     var all = st.data || []; all.forEach(function (x, i) { x.color = COLORS[i % COLORS.length]; });
@@ -641,6 +693,15 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
   // «Olvidar este dispositivo». Y se pide al navegador que no borre lo guardado (si lo permite).
   try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function () { }); } catch (e) { }
   var m = /#a=([A-Za-z0-9_-]+)/.exec(location.hash);
+  if (cfg.v2) { // (4.2.0) dentro de la app: espera la clave de ese móvil (de la propia app, misma dirección)
+    document.body.classList.add('embed');
+    app.innerHTML = '<main><div class="card"><p class="loading">' + (window.parent !== window ? 'Abriendo los números…' : 'Los números se ven dentro de la app.') + '</p></div></main>';
+    window.addEventListener('message', function (e) {
+      if (e.origin !== location.origin || e.source !== window.parent || !e.data || e.data.t !== 'cs-numeros' || typeof e.data.kid !== 'string' || !e.data.key || e.data.key.type !== 'private') return;
+      st.me = { kid: e.data.kid, id: e.data.kid, key: e.data.key }; st.files = {}; st.open = {}; load();
+    });
+    return;
+  }
   if (m && stored()) { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { } st.msg = ''; screenLocked(); }
   else if (m) screenAlta(m[1]); else screenLocked();
   window.addEventListener('hashchange', function () { var h = /#a=([A-Za-z0-9_-]+)/.exec(location.hash); if (!h) return; try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { } if (stored()) { st.me = null; st.msg = ''; screenLocked(); } else screenAlta(h[1]); });
